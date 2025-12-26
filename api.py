@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
 from psycopg2 import sql
+import json
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React
@@ -11,6 +13,29 @@ DB_URL = "postgresql://neondb_owner:npg_Jf2LGdNayZ3D@ep-late-bird-ahh0qy4j-poole
 
 def get_db_connection():
     return psycopg2.connect(DB_URL)
+
+@app.route('/api/verify-code', methods=['POST'])
+def verify_code():
+    """Verify the secret code"""
+    try:
+        data = request.json
+        user_code = data.get('code', '').strip().upper()
+
+        # Read the current code from file
+        if not os.path.exists('secret_code.json'):
+            return jsonify({'valid': False, 'message': 'No code generated yet'}), 401
+
+        with open('secret_code.json', 'r') as f:
+            code_data = json.load(f)
+            valid_code = code_data.get('code', '')
+
+        if user_code == valid_code:
+            return jsonify({'valid': True, 'message': 'Code verified!'})
+        else:
+            return jsonify({'valid': False, 'message': 'Invalid code'}), 401
+
+    except Exception as e:
+        return jsonify({'valid': False, 'message': str(e)}), 500
 
 @app.route('/api/tables', methods=['GET'])
 def get_tables():

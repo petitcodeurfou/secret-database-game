@@ -1,6 +1,9 @@
 import pygame
 import sys
 import webbrowser
+import random
+import string
+import json
 from player import Player
 from level import Level
 
@@ -23,12 +26,23 @@ class Game:
         self.current_room = "level1"
         self.show_victory = False
         self.database_opened = False
+        self.secret_code = None
+        self.show_code_screen = False
+        self.code_display_time = 0
 
         # Create player
         self.player = Player(100, 500)
 
         # Create rooms
         self.level1 = Level(self.player)
+
+    def generate_secret_code(self):
+        """Generate a random 6-character code"""
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        # Save code to file for API to verify
+        with open('secret_code.json', 'w') as f:
+            json.dump({'code': code}, f)
+        return code
 
     def run(self):
         while self.running:
@@ -48,6 +62,9 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
+                elif event.key == pygame.K_SPACE and self.show_code_screen and self.code_display_time >= 5:
+                    # Close code screen and return to game
+                    self.show_code_screen = False
                 elif event.key == pygame.K_r and self.show_victory:
                     # Restart the game
                     self.show_victory = False
@@ -58,7 +75,11 @@ class Game:
                     self.player.vel_y = 0
 
     def update(self, dt):
-        if self.current_room == "level1":
+        # Update code display timer
+        if self.show_code_screen:
+            self.code_display_time += dt
+
+        if self.current_room == "level1" and not self.show_code_screen:
             self.level1.update(dt)
 
             # Check if player reached the flag
@@ -68,12 +89,13 @@ class Game:
             # Check if player entered secret passage
             if self.level1.player_in_secret_passage() and not self.database_opened:
                 self.database_opened = True
-                # Open React app in browser
-                webbrowser.open('http://localhost:3000')
-                print("Secret database opened in browser!")
-                print("Make sure the React app and API are running:")
-                print("  1. cd database-ui && npm start")
-                print("  2. python api.py")
+                # Generate secret code
+                self.secret_code = self.generate_secret_code()
+                self.show_code_screen = True
+                self.code_display_time = 0
+                print(f"\n{'='*50}")
+                print(f"SECRET CODE GENERATED: {self.secret_code}")
+                print(f"{'='*50}\n")
 
     def draw(self):
         self.screen.fill((20, 20, 30))  # Dark background like Hollow Knight
@@ -81,11 +103,67 @@ class Game:
         if self.current_room == "level1":
             self.level1.draw(self.screen)
 
+        # Draw code screen if showing code
+        if self.show_code_screen:
+            self.draw_code_screen()
         # Draw victory screen if player reached flag
-        if self.show_victory:
+        elif self.show_victory:
             self.draw_victory_screen()
 
         pygame.display.flip()
+
+    def draw_code_screen(self):
+        """Draw secret code screen"""
+        # Semi-transparent overlay
+        overlay = pygame.Surface((1280, 720))
+        overlay.set_alpha(240)
+        overlay.fill((10, 10, 20))
+        self.screen.blit(overlay, (0, 0))
+
+        # Code box
+        code_box = pygame.Rect(290, 180, 700, 360)
+        pygame.draw.rect(self.screen, (30, 30, 50), code_box, border_radius=15)
+        pygame.draw.rect(self.screen, (100, 255, 150), code_box, 4, border_radius=15)
+
+        # Title
+        font_title = pygame.font.Font(None, 64)
+        title_text = font_title.render("SECRET DATABASE ACCESS", True, (100, 255, 150))
+        title_rect = title_text.get_rect(center=(640, 240))
+        self.screen.blit(title_text, title_rect)
+
+        # Code label
+        font_label = pygame.font.Font(None, 36)
+        label_text = font_label.render("Your Access Code:", True, (180, 180, 200))
+        label_rect = label_text.get_rect(center=(640, 310))
+        self.screen.blit(label_text, label_rect)
+
+        # The CODE (big and flashy)
+        font_code = pygame.font.Font(None, 96)
+        code_text = font_code.render(self.secret_code, True, (255, 255, 100))
+        code_rect = code_text.get_rect(center=(640, 380))
+        self.screen.blit(code_text, code_rect)
+
+        # Instructions
+        font_small = pygame.font.Font(None, 24)
+        inst1 = font_small.render("Enter this code on the website to access the database", True, (150, 150, 170))
+        inst1_rect = inst1.get_rect(center=(640, 460))
+        self.screen.blit(inst1, inst1_rect)
+
+        # Timer or action hint
+        if self.code_display_time < 5:
+            remaining = int(5 - self.code_display_time)
+            timer_text = font_small.render(f"Opening browser in {remaining}...", True, (150, 255, 150))
+            timer_rect = timer_text.get_rect(center=(640, 495))
+            self.screen.blit(timer_text, timer_rect)
+        else:
+            # Open browser and hide code screen
+            if not hasattr(self, '_browser_opened'):
+                webbrowser.open('http://localhost:3000')
+                self._browser_opened = True
+
+            hint_text = font_small.render("Press SPACE to return to game", True, (150, 255, 150))
+            hint_rect = hint_text.get_rect(center=(640, 495))
+            self.screen.blit(hint_text, hint_rect)
 
     def draw_victory_screen(self):
         """Draw victory screen overlay"""

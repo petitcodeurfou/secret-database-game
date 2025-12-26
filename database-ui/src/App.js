@@ -9,20 +9,47 @@ function App() {
   const [currentTable, setCurrentTable] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [view, setView] = useState('folders'); // 'folders', 'table', 'edit', 'create'
+  const [view, setView] = useState('login'); // 'login', 'folders', 'table', 'edit', 'create'
   const [editRow, setEditRow] = useState(null);
   const [formData, setFormData] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteRow, setDeleteRow] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [codeInput, setCodeInput] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    loadTables();
-  }, []);
+    if (isAuthenticated) {
+      loadTables();
+    }
+  }, [isAuthenticated]);
+
+  const handleCodeSubmit = async (e) => {
+    e.preventDefault();
+    setCodeError('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${API_URL}/verify-code`, {
+        code: codeInput.trim().toUpperCase()
+      });
+
+      if (response.data.valid) {
+        setIsAuthenticated(true);
+        setView('folders');
+      }
+    } catch (err) {
+      setCodeError(err.response?.data?.message || 'Invalid code. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadTables = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_URL}/tables`);
       setTables(response.data.tables);
       setLoading(false);
@@ -110,12 +137,44 @@ function App() {
     setFormData({ ...formData, [col]: value });
   };
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
   return (
     <div className="App">
+      {view === 'login' && (
+        <div className="login-view">
+          <div className="login-container">
+            <div className="login-box">
+              <h1>🔒 Secret Database Access</h1>
+              <p className="login-description">
+                Enter the access code from the game to unlock the database
+              </p>
+
+              <form onSubmit={handleCodeSubmit}>
+                <div className="code-input-group">
+                  <input
+                    type="text"
+                    value={codeInput}
+                    onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+                    placeholder="ENTER CODE"
+                    maxLength={6}
+                    className="code-input"
+                    autoFocus
+                  />
+                  <button type="submit" className="submit-btn" disabled={loading || codeInput.length !== 6}>
+                    {loading ? 'Verifying...' : 'Unlock'}
+                  </button>
+                </div>
+
+                {codeError && <div className="error-message">{codeError}</div>}
+
+                <div className="login-hint">
+                  <p>💡 Hint: Find the secret passage in the game to get the code</p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {view === 'folders' && (
         <div className="folders-view">
           <div className="header">
