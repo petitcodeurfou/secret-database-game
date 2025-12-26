@@ -20,6 +20,7 @@ function App() {
   const [codeError, setCodeError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showHomePage, setShowHomePage] = useState(true);
+  const [showGame, setShowGame] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -154,14 +155,15 @@ function App() {
                   <div className="option-icon">🎮</div>
                   <h3>Jouer au jeu</h3>
                   <p>Jouez directement dans votre navigateur pour découvrir le code secret</p>
-                  <a
-                    href="/game/index.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
                     className="option-btn download-btn"
+                    onClick={() => {
+                      setShowHomePage(false);
+                      setShowGame(true);
+                    }}
                   >
                     Jouer maintenant
-                  </a>
+                  </button>
                   <p className="option-hint">💡 Explorez tout le niveau et cherchez le passage secret!</p>
                 </div>
 
@@ -189,13 +191,57 @@ function App() {
         </div>
       )}
 
-      {!showHomePage && view === 'login' && (
+      {showGame && (
+        <div className="game-view">
+          <div className="game-header">
+            <button
+              className="back-to-home-btn"
+              onClick={() => {
+                setShowGame(false);
+                setShowHomePage(true);
+              }}
+            >
+              ← Retour à l'accueil
+            </button>
+            <h2>🎮 Secret Database Game</h2>
+            <div className="game-instructions">
+              <p>🎯 Objectif: Trouvez le passage secret et notez le code!</p>
+              <p>⌨️ Contrôles: Flèches ou WASD pour bouger, Espace pour sauter</p>
+            </div>
+          </div>
+          <div className="game-container">
+            <iframe
+              src="/game/index.html"
+              title="Secret Database Game"
+              className="game-iframe"
+              allowFullScreen
+            />
+          </div>
+          <div className="game-footer">
+            <p>💡 Astuce: Le passage secret est bien caché... Explorez partout!</p>
+            <button
+              className="code-entry-btn"
+              onClick={() => {
+                setShowGame(false);
+                setView('login');
+              }}
+            >
+              J'ai le code! 🔑
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!showHomePage && !showGame && view === 'login' && (
         <div className="login-view">
           <div className="login-container">
             <div className="login-box">
               <button
                 className="back-to-home-btn"
-                onClick={() => setShowHomePage(true)}
+                onClick={() => {
+                  setShowHomePage(true);
+                  setView('login');
+                }}
               >
                 ← Retour
               </button>
