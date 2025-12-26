@@ -25,6 +25,141 @@ body {
   color: #5f6368;
 }
 
+/* Home View */
+.home-view {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.home-container {
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+}
+
+.home-box {
+  background: white;
+  border-radius: 16px;
+  padding: 50px 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.home-box h1 {
+  font-size: 42px;
+  color: #323232;
+  margin-bottom: 15px;
+}
+
+.home-description {
+  color: #5f6368;
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+
+.home-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.option-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 30px 20px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s;
+}
+
+.option-card:hover {
+  border-color: #667eea;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.option-icon {
+  font-size: 64px;
+  margin-bottom: 15px;
+}
+
+.option-card h3 {
+  font-size: 24px;
+  color: #323232;
+  margin-bottom: 10px;
+}
+
+.option-card p {
+  color: #5f6368;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.option-btn {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 10px;
+}
+
+.download-btn {
+  background: #34a853;
+  color: white;
+}
+
+.download-btn:hover {
+  background: #2d8e47;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 168, 83, 0.4);
+}
+
+.enter-btn {
+  background: #667eea;
+  color: white;
+}
+
+.enter-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.option-link {
+  display: block;
+  color: #667eea;
+  font-size: 13px;
+  text-decoration: none;
+  margin-top: 5px;
+}
+
+.option-link:hover {
+  text-decoration: underline;
+}
+
+.home-hint {
+  margin-top: 30px;
+  padding: 15px;
+  background: #fff3cd;
+  border-radius: 8px;
+  border: 1px solid #ffecb5;
+}
+
+.home-hint p {
+  color: #856404;
+  font-size: 14px;
+  margin: 0;
+}
+
 /* Login View */
 .login-view {
   min-height: 100vh;
@@ -46,6 +181,25 @@ body {
   padding: 50px 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
+  position: relative;
+}
+
+.back-to-home-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: all 0.3s;
+}
+
+.back-to-home-btn:hover {
+  background: #f1f3f4;
+  border-radius: 6px;
 }
 
 .login-box h1 {

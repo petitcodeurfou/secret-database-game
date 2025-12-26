@@ -19,6 +19,7 @@ function App() {
   const [codeInput, setCodeInput] = useState('');
   const [codeError, setCodeError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showHomePage, setShowHomePage] = useState(true);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -139,10 +140,71 @@ function App() {
 
   return (
     <div className="App">
-      {view === 'login' && (
+      {showHomePage && (
+        <div className="home-view">
+          <div className="home-container">
+            <div className="home-box">
+              <h1>🎮 Secret Database Game</h1>
+              <p className="home-description">
+                Un jeu 2D de plateforme avec un secret caché...
+              </p>
+
+              <div className="home-options">
+                <div className="option-card">
+                  <div className="option-icon">🎮</div>
+                  <h3>Jouer au jeu</h3>
+                  <p>Téléchargez et jouez pour découvrir le code secret</p>
+                  <a
+                    href="https://github.com/petitcodeurfou/secret-database-game/archive/refs/heads/main.zip"
+                    className="option-btn download-btn"
+                    download
+                  >
+                    Télécharger le jeu
+                  </a>
+                  <a
+                    href="https://github.com/petitcodeurfou/secret-database-game#readme"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="option-link"
+                  >
+                    Instructions d'installation
+                  </a>
+                </div>
+
+                <div className="option-card">
+                  <div className="option-icon">🔒</div>
+                  <h3>Entrer le code</h3>
+                  <p>Vous avez déjà le code secret? Entrez-le ici!</p>
+                  <button
+                    className="option-btn enter-btn"
+                    onClick={() => {
+                      setShowHomePage(false);
+                      setView('login');
+                    }}
+                  >
+                    Entrer le code
+                  </button>
+                </div>
+              </div>
+
+              <div className="home-hint">
+                <p>💡 Astuce : Explorez chaque coin du niveau pour trouver le passage secret...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!showHomePage && view === 'login' && (
         <div className="login-view">
           <div className="login-container">
             <div className="login-box">
+              <button
+                className="back-to-home-btn"
+                onClick={() => setShowHomePage(true)}
+              >
+                ← Retour
+              </button>
               <h1>🔒 Secret Database Access</h1>
               <p className="login-description">
                 Enter the access code from the game to unlock the database
