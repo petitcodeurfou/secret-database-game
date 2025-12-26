@@ -1,6 +1,10 @@
+"""
+Web version of the game using Pygbag
+This is the entry point for the web build
+"""
+import asyncio
 import pygame
 import sys
-import webbrowser
 import random
 import string
 import json
@@ -39,18 +43,20 @@ class Game:
     def generate_secret_code(self):
         """Generate a random 6-character code"""
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        # Save code to file for API to verify
-        with open('secret_code.json', 'w') as f:
-            json.dump({'code': code}, f)
+        # Save code to localStorage (web version)
+        # For now, just store in memory
         return code
 
-    def run(self):
+    async def run(self):
         while self.running:
             dt = self.clock.tick(FPS) / 1000.0  # Delta time in seconds
 
             self.handle_events()
             self.update(dt)
             self.draw()
+
+            # Yield control to browser
+            await asyncio.sleep(0)
 
         pygame.quit()
         sys.exit()
@@ -62,7 +68,7 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
-                elif event.key == pygame.K_SPACE and self.show_code_screen and self.code_display_time >= 5:
+                elif event.key == pygame.K_SPACE and self.show_code_screen:
                     # Close code screen and return to game
                     self.show_code_screen = False
                 elif event.key == pygame.K_r and self.show_victory:
@@ -143,27 +149,15 @@ class Game:
         code_rect = code_text.get_rect(center=(640, 380))
         self.screen.blit(code_text, code_rect)
 
-        # Instructions
+        # Instructions for web version
         font_small = pygame.font.Font(None, 24)
-        inst1 = font_small.render("Enter this code on the website to access the database", True, (150, 150, 170))
+        inst1 = font_small.render("Enter this code on the database website to access the data", True, (150, 150, 170))
         inst1_rect = inst1.get_rect(center=(640, 460))
         self.screen.blit(inst1, inst1_rect)
 
-        # Timer or action hint
-        if self.code_display_time < 5:
-            remaining = int(5 - self.code_display_time)
-            timer_text = font_small.render(f"Opening browser in {remaining}...", True, (150, 255, 150))
-            timer_rect = timer_text.get_rect(center=(640, 495))
-            self.screen.blit(timer_text, timer_rect)
-        else:
-            # Open browser and hide code screen
-            if not hasattr(self, '_browser_opened'):
-                webbrowser.open('http://localhost:3000')
-                self._browser_opened = True
-
-            hint_text = font_small.render("Press SPACE to return to game", True, (150, 255, 150))
-            hint_rect = hint_text.get_rect(center=(640, 495))
-            self.screen.blit(hint_text, hint_rect)
+        hint_text = font_small.render("Press SPACE to return to game", True, (150, 255, 150))
+        hint_rect = hint_text.get_rect(center=(640, 495))
+        self.screen.blit(hint_text, hint_rect)
 
     def draw_victory_screen(self):
         """Draw victory screen overlay"""
@@ -202,6 +196,10 @@ class Game:
         restart_rect = restart_text.get_rect(center=(640, 460))
         self.screen.blit(restart_text, restart_rect)
 
-if __name__ == "__main__":
+# Async main entry point for Pygbag
+async def main():
     game = Game()
-    game.run()
+    await game.run()
+
+# Run the game
+asyncio.run(main())

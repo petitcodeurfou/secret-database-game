@@ -1,4 +1,5 @@
 import pygame
+import base64
 
 class Level:
     def __init__(self, player):
@@ -6,6 +7,11 @@ class Level:
         self.platforms = []
         self.secret_passage_rect = None
         self.hint_shown = False
+
+        # Obfuscated secret coordinates
+        self._sc = base64.b64decode(b'MTI1MCwyMDAsNTAsNzA=').decode().split(',')
+        # Obfuscated secret platform
+        self._sp = base64.b64decode(b'MTEwMCwyNTAsMTgwLDIw').decode().split(',')
 
         # Create platforms for level 1
         # Ground
@@ -31,13 +37,15 @@ class Level:
         self.platforms.append(pygame.Rect(800, 360, 120, 20))
 
         # Secret area platform (upper right - hidden)
-        self.platforms.append(pygame.Rect(1100, 250, 180, 20))
+        self.platforms.append(pygame.Rect(int(self._sp[0]), int(self._sp[1]), int(self._sp[2]), int(self._sp[3])))
 
         # Fake wall hiding the secret passage (very discrete - looks like normal wall)
-        self.fake_wall = pygame.Rect(1240, 200, 40, 70)
+        _fw_x = int(self._sc[0]) - 10
+        _fw_y = int(self._sc[1])
+        self.fake_wall = pygame.Rect(_fw_x, _fw_y, 40, 70)
 
         # Secret passage trigger area (behind the fake wall)
-        self.secret_passage_rect = pygame.Rect(1250, 200, 50, 70)
+        self.secret_passage_rect = pygame.Rect(int(self._sc[0]), int(self._sc[1]), int(self._sc[2]), int(self._sc[3]))
 
         # Visual decorations
         self.decorative_platforms = [

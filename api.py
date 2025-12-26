@@ -4,6 +4,8 @@ import psycopg2
 from psycopg2 import sql
 import json
 import os
+import random
+import string
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React
@@ -14,6 +16,31 @@ DB_URL = "postgresql://neondb_owner:npg_Jf2LGdNayZ3D@ep-late-bird-ahh0qy4j-poole
 def get_db_connection():
     return psycopg2.connect(DB_URL)
 
+# In-memory storage for active codes (in production, use Redis or database)
+active_codes = {}
+
+@app.route('/api/generate-code', methods=['POST'])
+def generate_code():
+    """Generate a new secret code"""
+    try:
+        # Generate random 6-character code
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+        # Store in memory (expires after use)
+        active_codes[code] = True
+
+        # Also save to file for backward compatibility with desktop version
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        code_file = os.path.join(script_dir, 'secret_code.json')
+        with open(code_file, 'w') as f:
+            json.dump({'code': code}, f)
+
+        print(f"[INFO] New code generated: {code}")
+        return jsonify({'code': code})
+    except Exception as e:
+        print(f"[ERROR] {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/verify-code', methods=['POST'])
 def verify_code():
     """Verify the secret code"""
@@ -21,20 +48,31 @@ def verify_code():
         data = request.json
         user_code = data.get('code', '').strip().upper()
 
-        # Read the current code from file
-        if not os.path.exists('secret_code.json'):
-            return jsonify({'valid': False, 'message': 'No code generated yet'}), 401
-
-        with open('secret_code.json', 'r') as f:
-            code_data = json.load(f)
-            valid_code = code_data.get('code', '')
-
-        if user_code == valid_code:
+        # Check in-memory codes first
+        if user_code in active_codes:
+            # Remove code after successful use (one-time use)
+            del active_codes[user_code]
+            print(f"[INFO] Code verified and consumed: {user_code}")
             return jsonify({'valid': True, 'message': 'Code verified!'})
-        else:
-            return jsonify({'valid': False, 'message': 'Invalid code'}), 401
+
+        # Fallback: check file (for desktop version)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        code_file = os.path.join(script_dir, 'secret_code.json')
+
+        if os.path.exists(code_file):
+            with open(code_file, 'r') as f:
+                code_data = json.load(f)
+                valid_code = code_data.get('code', '').strip().upper()
+
+            print(f"[DEBUG] User code: '{user_code}' | Valid code: '{valid_code}' | Match: {user_code == valid_code}")
+
+            if user_code == valid_code:
+                return jsonify({'valid': True, 'message': 'Code verified!'})
+
+        return jsonify({'valid': False, 'message': 'Invalid code'}), 401
 
     except Exception as e:
+        print(f"[ERROR] {str(e)}")
         return jsonify({'valid': False, 'message': str(e)}), 500
 
 @app.route('/api/tables', methods=['GET'])
