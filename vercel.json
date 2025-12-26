@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd database-ui && npm install && npm run build",
+  "outputDirectory": "database-ui/build",
+  "devCommand": "cd database-ui && npm start",
+  "installCommand": "cd database-ui && npm install"
+}
