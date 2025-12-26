@@ -1,0 +1,4 @@
+pygame
+psycopg2-binary
+flask
+flask-cors
