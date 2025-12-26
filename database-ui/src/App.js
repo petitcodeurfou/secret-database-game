@@ -153,22 +153,16 @@ function App() {
                 <div className="option-card">
                   <div className="option-icon">🎮</div>
                   <h3>Jouer au jeu</h3>
-                  <p>Téléchargez et jouez pour découvrir le code secret</p>
+                  <p>Jouez directement dans votre navigateur pour découvrir le code secret</p>
                   <a
-                    href="https://github.com/petitcodeurfou/secret-database-game/archive/refs/heads/main.zip"
-                    className="option-btn download-btn"
-                    download
-                  >
-                    Télécharger le jeu
-                  </a>
-                  <a
-                    href="https://github.com/petitcodeurfou/secret-database-game#readme"
+                    href="/game/index.html"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="option-link"
+                    className="option-btn download-btn"
                   >
-                    Instructions d'installation
+                    Jouer maintenant
                   </a>
+                  <p className="option-hint">💡 Explorez tout le niveau et cherchez le passage secret!</p>
                 </div>
 
                 <div className="option-card">

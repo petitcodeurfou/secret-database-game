@@ -146,6 +146,13 @@ body {
   text-decoration: underline;
 }
 
+.option-hint {
+  color: #856404;
+  font-size: 13px;
+  margin-top: 15px;
+  font-style: italic;
+}
+
 .home-hint {
   margin-top: 30px;
   padding: 15px;

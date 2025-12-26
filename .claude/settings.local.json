@@ -22,7 +22,9 @@
       "Bash(taskkill:*)",
       "Bash(cmd //c taskkill //PID 22636 //F)",
       "Bash(git remote:*)",
-      "Bash(del vercel.json)"
+      "Bash(del vercel.json)",
+      "Bash(python -m pygbag:*)",
+      "Bash(pkill:*)"
     ]
   }
 }
