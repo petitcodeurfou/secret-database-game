@@ -620,6 +620,8 @@ td.actions {
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 1001;
 }
 
 @keyframes slideUp {
@@ -651,6 +653,8 @@ td.actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .form-field label {
@@ -667,6 +671,9 @@ td.actions {
   font-size: 15px;
   transition: all 0.3s;
   background: white;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 
 .form-field input:focus {
