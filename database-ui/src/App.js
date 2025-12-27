@@ -20,7 +20,6 @@ function App() {
   const [codeError, setCodeError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showHomePage, setShowHomePage] = useState(true);
-  const [showGame, setShowGame] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -141,7 +140,7 @@ function App() {
 
   return (
     <div className="App">
-      {showHomePage && !showGame && (
+      {showHomePage && (
         <div className="home-view">
           <div className="home-container">
             <div className="home-box">
@@ -155,15 +154,14 @@ function App() {
                   <div className="option-icon">🎮</div>
                   <h3>Jouer au jeu</h3>
                   <p>Jouez directement dans votre navigateur</p>
-                  <button
+                  <a
+                    href="/game/index.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="option-btn download-btn"
-                    onClick={() => {
-                      setShowHomePage(false);
-                      setShowGame(true);
-                    }}
                   >
                     Jouer
-                  </button>
+                  </a>
                 </div>
 
                 <div className="option-card">
@@ -186,46 +184,7 @@ function App() {
         </div>
       )}
 
-      {showGame && (
-        <div className="game-view">
-          <div className="game-header">
-            <button
-              className="back-to-home-btn"
-              onClick={() => {
-                setShowGame(false);
-                setShowHomePage(true);
-              }}
-            >
-              ← Retour à l'accueil
-            </button>
-            <h2>🎮 Secret Database Game</h2>
-            <div className="game-instructions">
-              <p>⌨️ Contrôles: Flèches pour bouger, Espace pour sauter</p>
-            </div>
-          </div>
-          <div className="game-container">
-            <iframe
-              src="/game/index.html"
-              title="Secret Database Game"
-              className="game-iframe"
-              allowFullScreen
-            />
-          </div>
-          <div className="game-footer">
-            <button
-              className="code-entry-btn"
-              onClick={() => {
-                setShowGame(false);
-                setView('login');
-              }}
-            >
-              J'ai un code d'accès
-            </button>
-          </div>
-        </div>
-      )}
-
-      {!showHomePage && !showGame && view === 'login' && (
+      {!showHomePage && view === 'login' && (
         <div className="login-view">
           <div className="login-container">
             <div className="login-box">
