@@ -149,7 +149,7 @@ class Game:
 
         # Title
         font_title = pygame.font.Font(None, 64)
-        title_text = font_title.render("SECRET AREA UNLOCKED", True, (100, 255, 150))
+        title_text = font_title.render("BIENVENUE MAX", True, (100, 255, 150))
         title_rect = title_text.get_rect(center=(640, 240))
         self.screen.blit(title_text, title_rect)
 
