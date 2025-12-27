@@ -147,14 +147,14 @@ function App() {
             <div className="home-box">
               <h1>🎮 Secret Database Game</h1>
               <p className="home-description">
-                Un jeu 2D de plateforme. Jouez et découvrez ce qui se cache dans ce monde mystérieux...
+                Un jeu de plateforme 2D
               </p>
 
               <div className="home-options">
                 <div className="option-card">
                   <div className="option-icon">🎮</div>
                   <h3>Jouer au jeu</h3>
-                  <p>Jouez directement dans votre navigateur et complétez le niveau</p>
+                  <p>Jouez directement dans votre navigateur</p>
                   <button
                     className="option-btn download-btn"
                     onClick={() => {
@@ -162,7 +162,7 @@ function App() {
                       setShowGame(true);
                     }}
                   >
-                    Jouer maintenant
+                    Jouer
                   </button>
                 </div>
 
@@ -200,7 +200,6 @@ function App() {
             </button>
             <h2>🎮 Secret Database Game</h2>
             <div className="game-instructions">
-              <p>🎯 Objectif: Atteignez le drapeau pour compléter le niveau</p>
               <p>⌨️ Contrôles: Flèches pour bouger, Espace pour sauter</p>
             </div>
           </div>
@@ -213,7 +212,6 @@ function App() {
             />
           </div>
           <div className="game-footer">
-            <p>💡 Explorez chaque recoin du niveau... Il y a peut-être plus que le drapeau!</p>
             <button
               className="code-entry-btn"
               onClick={() => {
@@ -221,7 +219,7 @@ function App() {
                 setView('login');
               }}
             >
-              J'ai un code d'accès! 🔑
+              J'ai un code d'accès
             </button>
           </div>
         </div>
