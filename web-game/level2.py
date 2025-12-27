@@ -32,6 +32,7 @@ class Level2:
         # Upper difficult section
         self.platforms.append(pygame.Rect(1050, 150, 100, 20))
         self.platforms.append(pygame.Rect(900, 150, 100, 20))
+        self.platforms.append(pygame.Rect(750, 150, 100, 20))
 
         # Right side vertical climb
         self.platforms.append(pygame.Rect(1100, 550, 80, 20))
@@ -39,6 +40,10 @@ class Level2:
         self.platforms.append(pygame.Rect(1140, 410, 80, 20))
         self.platforms.append(pygame.Rect(1060, 340, 80, 20))
         self.platforms.append(pygame.Rect(1180, 270, 80, 20))
+        self.platforms.append(pygame.Rect(1100, 200, 80, 20))
+
+        # Path to flag (added platforms leading to flag)
+        self.platforms.append(pygame.Rect(1180, 150, 80, 20))
 
         # Flag platform (top right - hard to reach)
         self.flag_platform = pygame.Rect(1150, 80, 100, 20)
