@@ -25,7 +25,8 @@
       "Bash(del vercel.json)",
       "Bash(python -m pygbag:*)",
       "Bash(pkill:*)",
-      "Bash(unzip:*)"
+      "Bash(unzip:*)",
+      "WebFetch(domain:secret-database-game.vercel.app)"
     ]
   }
 }
