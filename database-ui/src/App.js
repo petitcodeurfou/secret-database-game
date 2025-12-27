@@ -298,15 +298,15 @@ function App() {
         <div className="home-view">
           <div className="home-container">
             <div className="home-box">
-              <h1>🎮 Secret Game</h1>
+              <h1>BIENVENU MAX</h1>
               <p className="home-description">
-                Un jeu de plateforme 2D
+                JEU DE PLATEFORME 2D
               </p>
 
               <div className="home-options">
                 <div className="option-card">
                   <div className="option-icon">🎮</div>
-                  <h3>Jouer au jeu</h3>
+                  <h3>JOUER AU JEU</h3>
                   <p>Jouez directement dans votre navigateur</p>
                   <a
                     href="/game/index.html"
@@ -314,13 +314,13 @@ function App() {
                     rel="noopener noreferrer"
                     className="option-btn download-btn"
                   >
-                    Jouer
+                    JOUER
                   </a>
                 </div>
 
                 <div className="option-card">
                   <div className="option-icon">🔒</div>
-                  <h3>Accès sécurisé</h3>
+                  <h3>ACCÈS SÉCURISÉ</h3>
                   <p>Vous avez un code d'accès? Entrez-le ici!</p>
                   <button
                     className="option-btn enter-btn"
@@ -329,7 +329,7 @@ function App() {
                       setView('login');
                     }}
                   >
-                    Entrer le code
+                    ENTRER LE CODE
                   </button>
                 </div>
               </div>
@@ -382,7 +382,7 @@ function App() {
       {view === 'folders' && (
         <div className="folders-view">
           <div className="header">
-            <h1>Secret Area</h1>
+            <h1>BIENVENU MAX</h1>
             <div className="status">
               <span className="status-dot connected"></span>
               Connected
