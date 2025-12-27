@@ -102,31 +102,22 @@ class Game:
                 self.secret_code = self.generate_secret_code()
                 self.show_code_screen = True
                 self.code_display_time = 0
-                print(f"\n{'='*50}")
-                print(f"SECRET CODE GENERATED: {self.secret_code}")
-                print(f"{'='*50}\n")
-
-                # Store code in localStorage and open website (web version only)
+                # Store code and open website (web version only)
                 try:
                     # Pygbag uses platform module for web APIs
                     import platform
                     # Store code in localStorage
                     platform.window.localStorage.setItem("secret_db_code", self.secret_code)
-                    print(f"[WEB] Stored code in localStorage: {self.secret_code}")
 
                     # Get current origin (domain)
                     origin = platform.window.location.origin
                     url = f"{origin}/"
-                    print(f"[WEB] Trying to open: {url}")
 
                     # Open login page in new tab
-                    result = platform.window.open(url, "_blank")
-                    print(f"[WEB] Window.open result: {result}")
-                except Exception as e:
-                    # Desktop version or error
-                    print(f"[ERROR] Failed to open window: {e}")
-                    import traceback
-                    traceback.print_exc()
+                    platform.window.open(url, "_blank")
+                except:
+                    # Desktop version - do nothing
+                    pass
 
     def draw(self):
         self.screen.fill((20, 20, 30))  # Dark background like Hollow Knight
@@ -158,7 +149,7 @@ class Game:
 
         # Title
         font_title = pygame.font.Font(None, 64)
-        title_text = font_title.render("SECRET DATABASE ACCESS", True, (100, 255, 150))
+        title_text = font_title.render("SECRET AREA UNLOCKED", True, (100, 255, 150))
         title_rect = title_text.get_rect(center=(640, 240))
         self.screen.blit(title_text, title_rect)
 
@@ -176,7 +167,7 @@ class Game:
 
         # Instructions for web version
         font_small = pygame.font.Font(None, 24)
-        inst1 = font_small.render("Opening database access page...", True, (150, 255, 150))
+        inst1 = font_small.render("Opening secret page...", True, (150, 255, 150))
         inst1_rect = inst1.get_rect(center=(640, 460))
         self.screen.blit(inst1, inst1_rect)
 

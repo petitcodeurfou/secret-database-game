@@ -190,7 +190,7 @@ function App() {
         <div className="home-view">
           <div className="home-container">
             <div className="home-box">
-              <h1>🎮 Secret Database Game</h1>
+              <h1>🎮 Secret Game</h1>
               <p className="home-description">
                 Un jeu de plateforme 2D
               </p>
@@ -212,7 +212,7 @@ function App() {
 
                 <div className="option-card">
                   <div className="option-icon">🔒</div>
-                  <h3>Accès à la base de données</h3>
+                  <h3>Accès sécurisé</h3>
                   <p>Vous avez un code d'accès? Entrez-le ici!</p>
                   <button
                     className="option-btn enter-btn"
@@ -245,7 +245,7 @@ function App() {
               </button>
               <h1>🔒 Accès sécurisé</h1>
               <p className="login-description">
-                Entrez votre code d'accès pour déverrouiller la base de données
+                Entrez votre code d'accès
               </p>
 
               <form onSubmit={handleCodeSubmit}>
@@ -274,7 +274,7 @@ function App() {
       {view === 'folders' && (
         <div className="folders-view">
           <div className="header">
-            <h1>Secret Database</h1>
+            <h1>Secret Area</h1>
             <div className="status">
               <span className="status-dot connected"></span>
               Connected
@@ -301,7 +301,7 @@ function App() {
         <div className="table-view">
           <div className="header">
             <button className="back-btn" onClick={() => setView('folders')}>← Back</button>
-            <span className="breadcrumb">Database / {currentTable}</span>
+            <span className="breadcrumb">Area / {currentTable}</span>
             <button className="new-btn" onClick={handleCreateRow}>+ New Row</button>
           </div>
           <div className="table-container">
