@@ -10,6 +10,7 @@ import string
 import json
 from player import Player
 from level import Level
+from level2 import Level2
 
 # Initialize Pygame
 pygame.init()
@@ -41,6 +42,7 @@ class Game:
 
         # Create rooms
         self.level1 = Level(self.player)
+        self.level2 = Level2(self.player)
 
     def generate_secret_code(self):
         """Generate a random 6-character code"""
@@ -133,12 +135,30 @@ class Game:
         if self.current_room == "level1" and not self.show_code_screen and not self.show_app_menu:
             self.level1.update(dt)
 
-            # Check if player reached the flag
+            # Check if player reached the flag - Go to level 2
             if self.level1.player_reached_flag():
-                self.show_victory = True
+                self.current_room = "level2"
+                # Reset player position for level 2
+                self.player.x = 100
+                self.player.y = 500
+                self.player.vel_x = 0
+                self.player.vel_y = 0
 
             # Check if player entered secret passage
             if self.level1.player_in_secret_passage() and not self.database_opened:
+                self.database_opened = True
+                # Show app selection menu
+                self.show_app_menu = True
+
+        elif self.current_room == "level2" and not self.show_code_screen and not self.show_app_menu:
+            self.level2.update(dt)
+
+            # Check if player reached the flag - Victory!
+            if self.level2.player_reached_flag():
+                self.show_victory = True
+
+            # Check if player entered secret passage in level 2
+            if self.level2.player_in_secret_passage() and not self.database_opened:
                 self.database_opened = True
                 # Show app selection menu
                 self.show_app_menu = True
@@ -148,6 +168,8 @@ class Game:
 
         if self.current_room == "level1":
             self.level1.draw(self.screen)
+        elif self.current_room == "level2":
+            self.level2.draw(self.screen)
 
         # Draw app menu if showing
         if self.show_app_menu:
@@ -281,19 +303,19 @@ class Game:
 
         # Title
         font_title = pygame.font.Font(None, 72)
-        title_text = font_title.render("LEVEL COMPLETE!", True, (220, 220, 255))
+        title_text = font_title.render("VICTOIRE!", True, (220, 220, 255))
         title_rect = title_text.get_rect(center=(640, 270))
         self.screen.blit(title_text, title_rect)
 
         # Message
         font_msg = pygame.font.Font(None, 32)
-        msg_text = font_msg.render("You reached the flag!", True, (180, 180, 200))
+        msg_text = font_msg.render("Tu as termine tous les niveaux!", True, (180, 180, 200))
         msg_rect = msg_text.get_rect(center=(640, 340))
         self.screen.blit(msg_text, msg_rect)
 
-        # Next level hint
+        # Congrats
         font_hint = pygame.font.Font(None, 28)
-        hint_text = font_hint.render("Level 2 is coming soon...", True, (150, 150, 170))
+        hint_text = font_hint.render("Felicitations Max! Niveau 2 complete!", True, (150, 220, 150))
         hint_rect = hint_text.get_rect(center=(640, 390))
         self.screen.blit(hint_text, hint_rect)
 
