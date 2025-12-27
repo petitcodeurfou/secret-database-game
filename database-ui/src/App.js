@@ -30,7 +30,7 @@ function App() {
   // Auto-login with code from localStorage or URL
   useEffect(() => {
     // Check localStorage first (from game)
-    const codeFromStorage = localStorage.getItem('secret_db_code');
+    const codeFromStorage = localStorage.getItem('access_code');
     let codeToUse = codeFromStorage;
 
     // Fallback to URL parameter
@@ -62,7 +62,7 @@ function App() {
             setView('folders');
             // Clean URL and localStorage
             window.history.replaceState({}, document.title, "/");
-            localStorage.removeItem('secret_db_code');
+            localStorage.removeItem('access_code');
           } else {
             setCodeError(response.data.message || 'Invalid code');
           }

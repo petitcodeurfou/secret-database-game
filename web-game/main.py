@@ -107,7 +107,7 @@ class Game:
                     # Pygbag uses platform module for web APIs
                     import platform
                     # Store code in localStorage
-                    platform.window.localStorage.setItem("secret_db_code", self.secret_code)
+                    platform.window.localStorage.setItem("access_code", self.secret_code)
 
                     # Get current origin (domain)
                     origin = platform.window.location.origin
