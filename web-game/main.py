@@ -135,44 +135,51 @@ class Game:
         pygame.display.flip()
 
     def draw_code_screen(self):
-        """Draw secret code screen"""
-        # Semi-transparent overlay
+        """Draw secret code screen - Modern style"""
+        # Gradient background overlay
         overlay = pygame.Surface((1280, 720))
-        overlay.set_alpha(240)
-        overlay.fill((10, 10, 20))
+        overlay.set_alpha(230)
+        # Purple to blue gradient effect
+        for y in range(720):
+            color_r = int(102 + (118 - 102) * (y / 720))
+            color_g = int(126 + (75 - 126) * (y / 720))
+            color_b = int(234 + (162 - 234) * (y / 720))
+            pygame.draw.line(overlay, (color_r, color_g, color_b), (0, y), (1280, y))
         self.screen.blit(overlay, (0, 0))
 
-        # Code box
-        code_box = pygame.Rect(290, 180, 700, 360)
-        pygame.draw.rect(self.screen, (30, 30, 50), code_box, border_radius=15)
-        pygame.draw.rect(self.screen, (100, 255, 150), code_box, 4, border_radius=15)
+        # Modern white card with shadow
+        shadow_box = pygame.Rect(295, 185, 700, 360)
+        pygame.draw.rect(self.screen, (20, 20, 40), shadow_box, border_radius=20)
 
-        # Title
+        code_box = pygame.Rect(290, 180, 700, 360)
+        pygame.draw.rect(self.screen, (255, 255, 255), code_box, border_radius=20)
+
+        # Title - Purple gradient effect
         font_title = pygame.font.Font(None, 64)
-        title_text = font_title.render("BIENVENUE MAX", True, (100, 255, 150))
+        title_text = font_title.render("Bienvenue Max", True, (102, 126, 234))
         title_rect = title_text.get_rect(center=(640, 240))
         self.screen.blit(title_text, title_rect)
 
         # Code label
         font_label = pygame.font.Font(None, 36)
-        label_text = font_label.render("Your Access Code:", True, (180, 180, 200))
+        label_text = font_label.render("Votre code d'acces:", True, (95, 99, 104))
         label_rect = label_text.get_rect(center=(640, 310))
         self.screen.blit(label_text, label_rect)
 
-        # The CODE (big and flashy)
+        # The CODE - Purple color
         font_code = pygame.font.Font(None, 96)
-        code_text = font_code.render(self.secret_code, True, (255, 255, 100))
+        code_text = font_code.render(self.secret_code, True, (118, 75, 162))
         code_rect = code_text.get_rect(center=(640, 380))
         self.screen.blit(code_text, code_rect)
 
-        # Instructions for web version
+        # Instructions - Modern gray
         font_small = pygame.font.Font(None, 24)
-        inst1 = font_small.render("Opening secret page...", True, (150, 255, 150))
+        inst1 = font_small.render("Ouverture de la page securisee...", True, (102, 126, 234))
         inst1_rect = inst1.get_rect(center=(640, 460))
         self.screen.blit(inst1, inst1_rect)
 
         remaining = max(0, int(3.0 - self.code_display_time))
-        hint_text = font_small.render(f"Returning to game in {remaining}... (or press SPACE)", True, (150, 150, 170))
+        hint_text = font_small.render(f"Retour au jeu dans {remaining}s... (ou appuyez ESPACE)", True, (140, 140, 160))
         hint_rect = hint_text.get_rect(center=(640, 495))
         self.screen.blit(hint_text, hint_rect)
 
