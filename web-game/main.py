@@ -33,6 +33,8 @@ class Game:
         self.secret_code = None
         self.show_code_screen = False
         self.code_display_time = 0
+        self.show_app_menu = False
+        self.selected_app = None
 
         # Create player
         self.player = Player(100, 500)
@@ -46,6 +48,33 @@ class Game:
         # Save code to localStorage (web version)
         # For now, just store in memory
         return code
+
+    def open_cloud_app(self):
+        """Open the Cloud app - generate code and open website"""
+        # Close app menu
+        self.show_app_menu = False
+
+        # Generate secret code
+        self.secret_code = self.generate_secret_code()
+        self.show_code_screen = True
+        self.code_display_time = 0
+
+        # Store code and open website (web version only)
+        try:
+            # Pygbag uses platform module for web APIs
+            import platform
+            # Store code in localStorage
+            platform.window.localStorage.setItem("access_code", self.secret_code)
+
+            # Get current origin (domain)
+            origin = platform.window.location.origin
+            url = f"{origin}/"
+
+            # Open login page in new tab
+            platform.window.open(url, "_blank")
+        except:
+            # Desktop version - do nothing
+            pass
 
     async def run(self):
         while self.running:
@@ -67,7 +96,11 @@ class Game:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
+                    if self.show_app_menu:
+                        # Close app menu and return to game
+                        self.show_app_menu = False
+                    else:
+                        self.running = False
                 elif event.key == pygame.K_SPACE and self.show_code_screen:
                     # Close code screen and return to game
                     self.show_code_screen = False
@@ -79,6 +112,15 @@ class Game:
                     self.player.y = 500
                     self.player.vel_x = 0
                     self.player.vel_y = 0
+                elif event.key == pygame.K_1 and self.show_app_menu:
+                    # Select Cloud app (number 1)
+                    self.open_cloud_app()
+            elif event.type == pygame.MOUSEBUTTONDOWN and self.show_app_menu:
+                # Check if clicked on Cloud app
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                cloud_rect = pygame.Rect(440, 280, 400, 180)
+                if cloud_rect.collidepoint(mouse_x, mouse_y):
+                    self.open_cloud_app()
 
     def update(self, dt):
         # Update code display timer
@@ -88,7 +130,7 @@ class Game:
             if self.code_display_time >= 3.0:
                 self.show_code_screen = False
 
-        if self.current_room == "level1" and not self.show_code_screen:
+        if self.current_room == "level1" and not self.show_code_screen and not self.show_app_menu:
             self.level1.update(dt)
 
             # Check if player reached the flag
@@ -98,26 +140,8 @@ class Game:
             # Check if player entered secret passage
             if self.level1.player_in_secret_passage() and not self.database_opened:
                 self.database_opened = True
-                # Generate secret code
-                self.secret_code = self.generate_secret_code()
-                self.show_code_screen = True
-                self.code_display_time = 0
-                # Store code and open website (web version only)
-                try:
-                    # Pygbag uses platform module for web APIs
-                    import platform
-                    # Store code in localStorage
-                    platform.window.localStorage.setItem("access_code", self.secret_code)
-
-                    # Get current origin (domain)
-                    origin = platform.window.location.origin
-                    url = f"{origin}/"
-
-                    # Open login page in new tab
-                    platform.window.open(url, "_blank")
-                except:
-                    # Desktop version - do nothing
-                    pass
+                # Show app selection menu
+                self.show_app_menu = True
 
     def draw(self):
         self.screen.fill((20, 20, 30))  # Dark background like Hollow Knight
@@ -125,14 +149,73 @@ class Game:
         if self.current_room == "level1":
             self.level1.draw(self.screen)
 
+        # Draw app menu if showing
+        if self.show_app_menu:
+            self.draw_app_menu()
         # Draw code screen if showing code
-        if self.show_code_screen:
+        elif self.show_code_screen:
             self.draw_code_screen()
         # Draw victory screen if player reached flag
         elif self.show_victory:
             self.draw_victory_screen()
 
         pygame.display.flip()
+
+    def draw_app_menu(self):
+        """Draw app selection menu - Modern style"""
+        # Gradient background overlay
+        overlay = pygame.Surface((1280, 720))
+        overlay.set_alpha(230)
+        # Purple to blue gradient effect
+        for y in range(720):
+            color_r = int(102 + (118 - 102) * (y / 720))
+            color_g = int(126 + (75 - 126) * (y / 720))
+            color_b = int(234 + (162 - 234) * (y / 720))
+            pygame.draw.line(overlay, (color_r, color_g, color_b), (0, y), (1280, y))
+        self.screen.blit(overlay, (0, 0))
+
+        # Title
+        font_title = pygame.font.Font(None, 72)
+        title_text = font_title.render("Selectionnez une app", True, (255, 255, 255))
+        title_rect = title_text.get_rect(center=(640, 150))
+        self.screen.blit(title_text, title_rect)
+
+        # Cloud app card
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        cloud_rect = pygame.Rect(440, 280, 400, 180)
+
+        # Check if mouse is hovering
+        is_hovering = cloud_rect.collidepoint(mouse_x, mouse_y)
+
+        # Shadow
+        shadow_rect = pygame.Rect(445, 285, 400, 180)
+        pygame.draw.rect(self.screen, (20, 20, 40), shadow_rect, border_radius=20)
+
+        # Card background - lighter if hovering
+        card_color = (255, 255, 255) if is_hovering else (245, 245, 250)
+        pygame.draw.rect(self.screen, card_color, cloud_rect, border_radius=20)
+
+        # Border - purple if hovering
+        border_color = (118, 75, 162) if is_hovering else (200, 200, 210)
+        pygame.draw.rect(self.screen, border_color, cloud_rect, 3, border_radius=20)
+
+        # Cloud icon
+        font_icon = pygame.font.Font(None, 96)
+        icon_text = font_icon.render("☁", True, (102, 126, 234))
+        icon_rect = icon_text.get_rect(center=(640, 340))
+        self.screen.blit(icon_text, icon_rect)
+
+        # App name
+        font_name = pygame.font.Font(None, 48)
+        name_text = font_name.render("Cloud", True, (60, 60, 80))
+        name_rect = name_text.get_rect(center=(640, 410))
+        self.screen.blit(name_text, name_rect)
+
+        # Instructions
+        font_small = pygame.font.Font(None, 24)
+        inst_text = font_small.render("Cliquez ou appuyez sur 1  |  ESC pour retourner", True, (200, 200, 220))
+        inst_rect = inst_text.get_rect(center=(640, 560))
+        self.screen.blit(inst_text, inst_rect)
 
     def draw_code_screen(self):
         """Draw secret code screen - Modern style"""
