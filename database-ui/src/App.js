@@ -28,6 +28,11 @@ function App() {
   const [newFolderName, setNewFolderName] = useState('');
   const [uploadingFile, setUploadingFile] = useState(false);
 
+  // Decryption animation states
+  const [showDecryption, setShowDecryption] = useState(false);
+  const [decryptedText, setDecryptedText] = useState('');
+  const [currentApp, setCurrentApp] = useState('');
+
   useEffect(() => {
     if (isAuthenticated) {
       loadTables();
@@ -80,6 +85,41 @@ function App() {
     }
   }, []);
 
+  // Decryption animation effect
+  useEffect(() => {
+    if (showDecryption) {
+      const targetText = "Bonjour Max";
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*";
+      let iteration = 0;
+
+      const interval = setInterval(() => {
+        setDecryptedText(
+          targetText
+            .split("")
+            .map((letter, index) => {
+              if (index < iteration) {
+                return targetText[index];
+              }
+              return characters[Math.floor(Math.random() * characters.length)];
+            })
+            .join("")
+        );
+
+        if (iteration >= targetText.length) {
+          clearInterval(interval);
+          // Hide decryption after 1.5 seconds
+          setTimeout(() => {
+            setShowDecryption(false);
+          }, 1500);
+        }
+
+        iteration += 1 / 3;
+      }, 30);
+
+      return () => clearInterval(interval);
+    }
+  }, [showDecryption]);
+
   const handleCodeSubmit = async (e) => {
     e.preventDefault();
     setCodeError('');
@@ -99,6 +139,16 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const openAppWithAnimation = (appName, callback) => {
+    setCurrentApp(appName);
+    setShowDecryption(true);
+    setDecryptedText('');
+    // Execute callback after animation (2 seconds total)
+    setTimeout(() => {
+      callback();
+    }, 2000);
   };
 
   const loadTables = async () => {
@@ -374,7 +424,7 @@ function App() {
             </div>
           </div>
           <div className="folders-grid">
-            <div className="folder-card" onClick={() => { loadFiles('/'); setView('files'); }}>
+            <div className="folder-card" onClick={() => openAppWithAnimation('FILES', () => { loadFiles('/'); setView('files'); })}>
               <div className="folder-icon">
                 <div style={{fontSize: '48px'}}>📁</div>
               </div>
@@ -382,7 +432,7 @@ function App() {
               <div className="folder-type">Storage</div>
             </div>
             {tables.map(table => (
-              <div key={table} className="folder-card" onClick={() => loadTableData(table)}>
+              <div key={table} className="folder-card" onClick={() => openAppWithAnimation(table.toUpperCase(), () => loadTableData(table))}>
                 <div className="folder-icon">
                   <svg viewBox="0 0 60 50" width="60" height="50">
                     <polygon points="0,10 20,10 25,0 60,0 60,10" fill="#0ff" />
@@ -549,6 +599,15 @@ function App() {
               <button onClick={() => { setShowNewFolderModal(false); setNewFolderName(''); }}>CANCEL</button>
               <button className="save-btn" onClick={handleCreateFolder}>CREATE</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showDecryption && (
+        <div className="decryption-overlay">
+          <div className="decryption-popup">
+            <div className="decryption-text">{decryptedText}</div>
+            <div className="decryption-subtitle">Ouverture de {currentApp}...</div>
           </div>
         </div>
       )}

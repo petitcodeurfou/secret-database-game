@@ -686,3 +686,69 @@ td.actions {
   font-weight: 600;
   border: 2px solid rgba(234,67,53,0.2);
 }
+
+/* Decryption Animation Popup */
+.decryption-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.decryption-popup {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60px 80px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: popupScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popupScale {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.decryption-text {
+  font-size: 72px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 8px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.decryption-subtitle {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
