@@ -108,19 +108,25 @@ class Game:
 
                 # Store code in localStorage and open website (web version only)
                 try:
+                    # Pygbag uses platform module for web APIs
                     import platform
-                    if platform.system() == "Emscripten":
-                        # We're on web, use JavaScript
-                        import js
-                        # Store code in localStorage so React can read it
-                        js.localStorage.setItem("secret_db_code", self.secret_code)
+                    # Store code in localStorage
+                    platform.window.localStorage.setItem("secret_db_code", self.secret_code)
+                    print(f"[WEB] Stored code in localStorage: {self.secret_code}")
 
-                        # Get current origin (domain)
-                        origin = js.window.location.origin
-                        # Open login page in new tab
-                        js.window.open(f"{origin}/", "_blank")
-                except:
-                    pass  # Desktop version, do nothing
+                    # Get current origin (domain)
+                    origin = platform.window.location.origin
+                    url = f"{origin}/"
+                    print(f"[WEB] Trying to open: {url}")
+
+                    # Open login page in new tab
+                    result = platform.window.open(url, "_blank")
+                    print(f"[WEB] Window.open result: {result}")
+                except Exception as e:
+                    # Desktop version or error
+                    print(f"[ERROR] Failed to open window: {e}")
+                    import traceback
+                    traceback.print_exc()
 
     def draw(self):
         self.screen.fill((20, 20, 30))  # Dark background like Hollow Knight
