@@ -24,7 +24,8 @@
       "Bash(git remote:*)",
       "Bash(del vercel.json)",
       "Bash(python -m pygbag:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(unzip:*)"
     ]
   }
 }

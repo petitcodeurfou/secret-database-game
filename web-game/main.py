@@ -84,6 +84,9 @@ class Game:
         # Update code display timer
         if self.show_code_screen:
             self.code_display_time += dt
+            # Auto-close after 3 seconds
+            if self.code_display_time >= 3.0:
+                self.show_code_screen = False
 
         if self.current_room == "level1" and not self.show_code_screen:
             self.level1.update(dt)
@@ -102,6 +105,22 @@ class Game:
                 print(f"\n{'='*50}")
                 print(f"SECRET CODE GENERATED: {self.secret_code}")
                 print(f"{'='*50}\n")
+
+                # Store code in localStorage and open website (web version only)
+                try:
+                    import platform
+                    if platform.system() == "Emscripten":
+                        # We're on web, use JavaScript
+                        import js
+                        # Store code in localStorage so React can read it
+                        js.localStorage.setItem("secret_db_code", self.secret_code)
+
+                        # Get current origin (domain)
+                        origin = js.window.location.origin
+                        # Open login page in new tab
+                        js.window.open(f"{origin}/", "_blank")
+                except:
+                    pass  # Desktop version, do nothing
 
     def draw(self):
         self.screen.fill((20, 20, 30))  # Dark background like Hollow Knight
@@ -151,11 +170,12 @@ class Game:
 
         # Instructions for web version
         font_small = pygame.font.Font(None, 24)
-        inst1 = font_small.render("Enter this code on the database website to access the data", True, (150, 150, 170))
+        inst1 = font_small.render("Opening database access page...", True, (150, 255, 150))
         inst1_rect = inst1.get_rect(center=(640, 460))
         self.screen.blit(inst1, inst1_rect)
 
-        hint_text = font_small.render("Press SPACE to return to game", True, (150, 255, 150))
+        remaining = max(0, int(3.0 - self.code_display_time))
+        hint_text = font_small.render(f"Returning to game in {remaining}... (or press SPACE)", True, (150, 150, 170))
         hint_rect = hint_text.get_rect(center=(640, 495))
         self.screen.blit(hint_text, hint_rect)
 

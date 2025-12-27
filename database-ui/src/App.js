@@ -27,6 +27,52 @@ function App() {
     }
   }, [isAuthenticated]);
 
+  // Auto-login with code from localStorage or URL
+  useEffect(() => {
+    // Check localStorage first (from game)
+    const codeFromStorage = localStorage.getItem('secret_db_code');
+    let codeToUse = codeFromStorage;
+
+    // Fallback to URL parameter
+    if (!codeToUse) {
+      const urlParams = new URLSearchParams(window.location.search);
+      codeToUse = urlParams.get('code');
+    }
+
+    if (codeToUse && !isAuthenticated) {
+      setCodeInput(codeToUse.toUpperCase());
+      setShowHomePage(false);
+      setView('login');
+
+      // Auto-submit the code
+      setTimeout(async () => {
+        try {
+          // First, store the code in the API (from game)
+          await axios.post(`${API_URL}/store-code`, {
+            code: codeToUse.trim().toUpperCase()
+          });
+
+          // Then verify it
+          const response = await axios.post(`${API_URL}/verify-code`, {
+            code: codeToUse.trim().toUpperCase()
+          });
+
+          if (response.data.valid) {
+            setIsAuthenticated(true);
+            setView('folders');
+            // Clean URL and localStorage
+            window.history.replaceState({}, document.title, "/");
+            localStorage.removeItem('secret_db_code');
+          } else {
+            setCodeError(response.data.message || 'Invalid code');
+          }
+        } catch (err) {
+          setCodeError(err.response?.data?.message || 'Invalid code. Please try again.');
+        }
+      }, 500);
+    }
+  }, []);
+
   const handleCodeSubmit = async (e) => {
     e.preventDefault();
     setCodeError('');
