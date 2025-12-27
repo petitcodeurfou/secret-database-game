@@ -132,6 +132,10 @@ class Game:
             if self.code_display_time >= 3.0:
                 self.show_code_screen = False
 
+        if self.show_victory:
+            # Don't update game when victory screen is showing
+            return
+
         if self.current_room == "level1" and not self.show_code_screen and not self.show_app_menu:
             self.level1.update(dt)
 
@@ -156,6 +160,7 @@ class Game:
             # Check if player reached the flag - Victory!
             if self.level2.player_reached_flag():
                 self.show_victory = True
+                print("[DEBUG] Victory triggered!")  # Debug
 
             # Check if player entered secret passage in level 2
             if self.level2.player_in_secret_passage() and not self.database_opened:
