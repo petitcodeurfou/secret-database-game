@@ -317,21 +317,6 @@ function App() {
                     Jouer
                   </a>
                 </div>
-
-                <div className="option-card">
-                  <div className="option-icon">🔒</div>
-                  <h3>Accès sécurisé</h3>
-                  <p>Vous avez un code d'accès? Entrez-le ici!</p>
-                  <button
-                    className="option-btn enter-btn"
-                    onClick={() => {
-                      setShowHomePage(false);
-                      setView('login');
-                    }}
-                  >
-                    Entrer le code
-                  </button>
-                </div>
               </div>
             </div>
           </div>
