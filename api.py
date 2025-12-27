@@ -13,6 +13,19 @@ CORS(app)  # Enable CORS for React
 # Database connection string
 DB_URL = "postgresql://neondb_owner:npg_Jf2LGdNayZ3D@ep-late-bird-ahh0qy4j-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
+@app.route('/')
+def index():
+    """API root endpoint"""
+    return jsonify({
+        'status': 'online',
+        'message': 'Secret Database API',
+        'endpoints': {
+            'tables': '/api/tables',
+            'verify_code': '/api/verify-code',
+            'store_code': '/api/store-code'
+        }
+    })
+
 def get_db_connection():
     return psycopg2.connect(DB_URL)
 
