@@ -141,20 +141,20 @@ function App() {
 
   return (
     <div className="App">
-      {showHomePage && (
+      {showHomePage && !showGame && (
         <div className="home-view">
           <div className="home-container">
             <div className="home-box">
               <h1>🎮 Secret Database Game</h1>
               <p className="home-description">
-                Un jeu 2D de plateforme avec un secret caché...
+                Un jeu 2D de plateforme. Jouez et découvrez ce qui se cache dans ce monde mystérieux...
               </p>
 
               <div className="home-options">
                 <div className="option-card">
                   <div className="option-icon">🎮</div>
                   <h3>Jouer au jeu</h3>
-                  <p>Jouez directement dans votre navigateur pour découvrir le code secret</p>
+                  <p>Jouez directement dans votre navigateur et complétez le niveau</p>
                   <button
                     className="option-btn download-btn"
                     onClick={() => {
@@ -164,13 +164,12 @@ function App() {
                   >
                     Jouer maintenant
                   </button>
-                  <p className="option-hint">💡 Explorez tout le niveau et cherchez le passage secret!</p>
                 </div>
 
                 <div className="option-card">
                   <div className="option-icon">🔒</div>
-                  <h3>Entrer le code</h3>
-                  <p>Vous avez déjà le code secret? Entrez-le ici!</p>
+                  <h3>Accès à la base de données</h3>
+                  <p>Vous avez un code d'accès? Entrez-le ici!</p>
                   <button
                     className="option-btn enter-btn"
                     onClick={() => {
@@ -181,10 +180,6 @@ function App() {
                     Entrer le code
                   </button>
                 </div>
-              </div>
-
-              <div className="home-hint">
-                <p>💡 Astuce : Explorez chaque coin du niveau pour trouver le passage secret...</p>
               </div>
             </div>
           </div>
@@ -205,8 +200,8 @@ function App() {
             </button>
             <h2>🎮 Secret Database Game</h2>
             <div className="game-instructions">
-              <p>🎯 Objectif: Trouvez le passage secret et notez le code!</p>
-              <p>⌨️ Contrôles: Flèches ou WASD pour bouger, Espace pour sauter</p>
+              <p>🎯 Objectif: Atteignez le drapeau pour compléter le niveau</p>
+              <p>⌨️ Contrôles: Flèches pour bouger, Espace pour sauter</p>
             </div>
           </div>
           <div className="game-container">
@@ -218,7 +213,7 @@ function App() {
             />
           </div>
           <div className="game-footer">
-            <p>💡 Astuce: Le passage secret est bien caché... Explorez partout!</p>
+            <p>💡 Explorez chaque recoin du niveau... Il y a peut-être plus que le drapeau!</p>
             <button
               className="code-entry-btn"
               onClick={() => {
@@ -226,7 +221,7 @@ function App() {
                 setView('login');
               }}
             >
-              J'ai le code! 🔑
+              J'ai un code d'accès! 🔑
             </button>
           </div>
         </div>
@@ -245,9 +240,9 @@ function App() {
               >
                 ← Retour
               </button>
-              <h1>🔒 Secret Database Access</h1>
+              <h1>🔒 Accès sécurisé</h1>
               <p className="login-description">
-                Enter the access code from the game to unlock the database
+                Entrez votre code d'accès pour déverrouiller la base de données
               </p>
 
               <form onSubmit={handleCodeSubmit}>
@@ -267,10 +262,6 @@ function App() {
                 </div>
 
                 {codeError && <div className="error-message">{codeError}</div>}
-
-                <div className="login-hint">
-                  <p>💡 Hint: Find the secret passage in the game to get the code</p>
-                </div>
               </form>
             </div>
           </div>
