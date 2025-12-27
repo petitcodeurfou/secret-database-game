@@ -63,13 +63,13 @@ body {
   100% { transform: translate(0); }
 }
 
-/* Home View - Cyberpunk */
+/* Home View - Modern Clean */
 .home-view {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
 }
@@ -77,20 +77,12 @@ body {
 .home-view::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    linear-gradient(90deg, transparent 0%, #0ff 50%, transparent 100%),
-    repeating-linear-gradient(90deg, #000 0px, #111 1px, #000 2px, #000 40px);
-  opacity: 0.1;
-  animation: grid-move 20s linear infinite;
-}
-
-@keyframes grid-move {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(40px); }
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: pulse 8s ease-in-out infinite;
 }
 
 .home-container {
@@ -102,64 +94,32 @@ body {
 }
 
 .home-box {
-  background: rgba(0, 0, 0, 0.85);
-  border: 2px solid #0ff;
-  box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.5),
-    inset 0 0 20px rgba(0, 255, 255, 0.1);
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
   padding: 60px 50px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
   text-align: center;
-  position: relative;
-}
-
-.home-box::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #0ff, #f0f, #0ff);
-  z-index: -1;
-  opacity: 0.3;
-  filter: blur(10px);
 }
 
 .home-box h1 {
   font-size: 52px;
-  color: #0ff;
-  text-shadow:
-    0 0 10px #0ff,
-    0 0 20px #0ff,
-    0 0 30px #0ff,
-    0 0 40px #0ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 20px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  animation: flicker 2s infinite alternate;
-  position: relative;
-}
-
-@keyframes flicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    text-shadow:
-      0 0 10px #0ff,
-      0 0 20px #0ff,
-      0 0 30px #0ff,
-      0 0 40px #0ff;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-  }
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .home-description {
-  color: #0ff;
+  color: #5f6368;
   margin-bottom: 50px;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
-  text-shadow: 0 0 5px #0ff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .home-options {
@@ -170,10 +130,11 @@ body {
 }
 
 .option-card {
-  background: rgba(0, 20, 30, 0.8);
-  border: 2px solid #0ff;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 20px;
   padding: 40px 30px;
-  transition: all 0.3s;
+  border: 2px solid #e8e8e8;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -183,106 +144,105 @@ body {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.option-card:hover::before {
-  left: 100%;
+  background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.4s;
 }
 
 .option-card:hover {
-  border-color: #f0f;
-  box-shadow:
-    0 0 20px rgba(255, 0, 255, 0.5),
-    inset 0 0 20px rgba(255, 0, 255, 0.1);
-  transform: translateY(-5px);
+  border-color: #667eea;
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+}
+
+.option-card:hover::before {
+  opacity: 1;
 }
 
 .option-icon {
   font-size: 72px;
   margin-bottom: 20px;
-  filter: drop-shadow(0 0 10px #0ff);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  transition: transform 0.4s;
 }
 
 .option-card:hover .option-icon {
-  filter: drop-shadow(0 0 15px #f0f);
-  animation: pulse-icon 0.5s;
-}
-
-@keyframes pulse-icon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  transform: scale(1.1) rotate(5deg);
 }
 
 .option-card h3 {
   font-size: 26px;
-  color: #0ff;
+  color: #1a1a2e;
   margin-bottom: 12px;
-  font-weight: 900;
-  text-shadow: 0 0 10px #0ff;
-  letter-spacing: 2px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .option-card p {
-  color: #0ff;
-  font-size: 14px;
+  color: #5f6368;
+  font-size: 15px;
   margin-bottom: 25px;
-  opacity: 0.8;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .option-btn {
   display: inline-block;
   padding: 16px 36px;
-  font-size: 16px;
-  font-weight: 900;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
   text-decoration: none;
-  border: 2px solid #0ff;
-  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-bottom: 10px;
   position: relative;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  z-index: 1;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .download-btn {
-  color: #0f0;
-  border-color: #0f0;
-  text-shadow: 0 0 5px #0f0;
+  background: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+  color: white;
 }
 
 .download-btn:hover {
-  background: #0f0;
-  color: #000;
-  box-shadow: 0 0 20px #0f0;
-  text-shadow: none;
+  background: linear-gradient(135deg, #2d8e47 0%, #247a3a 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(52, 168, 83, 0.5);
 }
 
 .enter-btn {
-  color: #f0f;
-  border-color: #f0f;
-  text-shadow: 0 0 5px #f0f;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
 .enter-btn:hover {
-  background: #f0f;
-  color: #000;
-  box-shadow: 0 0 20px #f0f;
-  text-shadow: none;
+  background: linear-gradient(135deg, #5568d3 0%, #653a8c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
-/* Login View - Glitch */
+/* Login View - Modern Clean */
 .login-view {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
 }
@@ -290,14 +250,12 @@ body {
 .login-view::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    repeating-linear-gradient(0deg, #000 0px, #0ff 1px, #000 2px, #000 40px),
-    repeating-linear-gradient(90deg, #000 0px, #0ff 1px, #000 2px, #000 40px);
-  opacity: 0.05;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: pulse 8s ease-in-out infinite;
 }
 
 .login-container {
@@ -309,12 +267,11 @@ body {
 }
 
 .login-box {
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid #0ff;
-  box-shadow:
-    0 0 30px rgba(0, 255, 255, 0.5),
-    inset 0 0 30px rgba(0, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
   padding: 60px 50px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
   text-align: center;
   position: relative;
 }
@@ -324,42 +281,42 @@ body {
   top: 24px;
   left: 24px;
   background: transparent;
-  border: 1px solid #0ff;
-  color: #0ff;
-  font-size: 14px;
+  border: none;
+  color: #667eea;
+  font-size: 17px;
   cursor: pointer;
   padding: 10px 16px;
   transition: all 0.3s;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .back-to-home-btn:hover {
-  background: #0ff;
-  color: #000;
-  box-shadow: 0 0 15px #0ff;
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(-4px);
 }
 
 .login-box h1 {
   font-size: 38px;
-  color: #0ff;
-  text-shadow:
-    0 0 10px #0ff,
-    0 0 20px #0ff,
-    0 0 30px #0ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 18px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  animation: flicker 3s infinite alternate;
+  font-weight: 800;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.5px;
 }
 
 .login-description {
-  color: #0ff;
+  color: #5f6368;
   margin-bottom: 40px;
-  font-size: 16px;
-  opacity: 0.9;
-  text-shadow: 0 0 5px #0ff;
+  font-size: 17px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .code-input-group {
@@ -371,50 +328,51 @@ body {
 .code-input {
   flex: 1;
   padding: 20px 24px;
-  border: 2px solid #0ff;
-  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
   text-align: center;
   letter-spacing: 12px;
   transition: all 0.3s;
   font-family: 'Courier New', monospace;
-  color: #0ff;
-  text-shadow: 0 0 10px #0ff;
+  color: #1a1a2e;
 }
 
 .code-input:focus {
   outline: none;
-  background: rgba(0, 255, 255, 0.1);
-  box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.5),
-    inset 0 0 10px rgba(0, 255, 255, 0.2);
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  transform: scale(1.02);
 }
 
 .submit-btn {
   padding: 20px 40px;
-  background: transparent;
-  color: #f0f;
-  border: 2px solid #f0f;
-  font-size: 16px;
-  font-weight: 900;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-shadow: 0 0 5px #f0f;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #f0f;
-  color: #000;
-  box-shadow: 0 0 20px #f0f;
-  text-shadow: none;
+  background: linear-gradient(135deg, #5568d3 0%, #653a8c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
 .submit-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Header - Neon */

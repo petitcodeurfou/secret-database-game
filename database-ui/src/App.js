@@ -298,15 +298,15 @@ function App() {
         <div className="home-view">
           <div className="home-container">
             <div className="home-box">
-              <h1>BIENVENU MAX</h1>
+              <h1>🎮 Secret Game</h1>
               <p className="home-description">
-                JEU DE PLATEFORME 2D
+                Un jeu de plateforme 2D
               </p>
 
               <div className="home-options">
                 <div className="option-card">
                   <div className="option-icon">🎮</div>
-                  <h3>JOUER AU JEU</h3>
+                  <h3>Jouer au jeu</h3>
                   <p>Jouez directement dans votre navigateur</p>
                   <a
                     href="/game/index.html"
@@ -314,13 +314,13 @@ function App() {
                     rel="noopener noreferrer"
                     className="option-btn download-btn"
                   >
-                    JOUER
+                    Jouer
                   </a>
                 </div>
 
                 <div className="option-card">
                   <div className="option-icon">🔒</div>
-                  <h3>ACCÈS SÉCURISÉ</h3>
+                  <h3>Accès sécurisé</h3>
                   <p>Vous avez un code d'accès? Entrez-le ici!</p>
                   <button
                     className="option-btn enter-btn"
@@ -329,7 +329,7 @@ function App() {
                       setView('login');
                     }}
                   >
-                    ENTRER LE CODE
+                    Entrer le code
                   </button>
                 </div>
               </div>
