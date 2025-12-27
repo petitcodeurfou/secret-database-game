@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import psycopg2
 from psycopg2 import sql
@@ -6,6 +6,8 @@ import json
 import os
 import random
 import string
+import base64
+from io import BytesIO
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React
@@ -273,6 +275,185 @@ def delete_row(table_name):
         )
 
         cursor.execute(query, where_values)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# File and Folder Management
+@app.route('/api/files/init', methods=['POST'])
+def init_files_table():
+    """Initialize files table if it doesn't exist"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS files (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                type VARCHAR(10) NOT NULL,
+                parent_folder VARCHAR(500) DEFAULT '/',
+                file_data TEXT,
+                file_size INTEGER DEFAULT 0,
+                mime_type VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files', methods=['GET'])
+def get_files():
+    """Get all files and folders"""
+    try:
+        folder = request.args.get('folder', '/')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Ensure table exists
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS files (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                type VARCHAR(10) NOT NULL,
+                parent_folder VARCHAR(500) DEFAULT '/',
+                file_data TEXT,
+                file_size INTEGER DEFAULT 0,
+                mime_type VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+
+        cursor.execute("""
+            SELECT id, name, type, parent_folder, file_size, mime_type, created_at
+            FROM files
+            WHERE parent_folder = %s
+            ORDER BY type DESC, name ASC
+        """, (folder,))
+
+        files = []
+        for row in cursor.fetchall():
+            files.append({
+                'id': row[0],
+                'name': row[1],
+                'type': row[2],
+                'parent_folder': row[3],
+                'file_size': row[4],
+                'mime_type': row[5],
+                'created_at': row[6].isoformat() if row[6] else None
+            })
+
+        cursor.close()
+        conn.close()
+        return jsonify({'files': files})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files/folder', methods=['POST'])
+def create_folder():
+    """Create a new folder"""
+    try:
+        data = request.json
+        name = data.get('name')
+        parent_folder = data.get('parent_folder', '/')
+
+        if not name:
+            return jsonify({'error': 'Folder name required'}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO files (name, type, parent_folder)
+            VALUES (%s, %s, %s)
+            RETURNING id
+        """, (name, 'folder', parent_folder))
+
+        folder_id = cursor.fetchone()[0]
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True, 'id': folder_id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files/upload', methods=['POST'])
+def upload_file():
+    """Upload a file"""
+    try:
+        data = request.json
+        name = data.get('name')
+        parent_folder = data.get('parent_folder', '/')
+        file_data = data.get('file_data')  # base64 encoded
+        mime_type = data.get('mime_type')
+        file_size = data.get('file_size', 0)
+
+        if not name or not file_data:
+            return jsonify({'error': 'File name and data required'}), 400
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO files (name, type, parent_folder, file_data, file_size, mime_type)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """, (name, 'file', parent_folder, file_data, file_size, mime_type))
+
+        file_id = cursor.fetchone()[0]
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True, 'id': file_id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files/<int:file_id>', methods=['GET'])
+def download_file(file_id):
+    """Download a file"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT name, file_data, mime_type
+            FROM files
+            WHERE id = %s AND type = 'file'
+        """, (file_id,))
+
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not result:
+            return jsonify({'error': 'File not found'}), 404
+
+        name, file_data, mime_type = result
+
+        return jsonify({
+            'name': name,
+            'file_data': file_data,
+            'mime_type': mime_type
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/files/<int:file_id>', methods=['DELETE'])
+def delete_file(file_id):
+    """Delete a file or folder"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            DELETE FROM files WHERE id = %s
+        """, (file_id,))
         conn.commit()
         cursor.close()
         conn.close()

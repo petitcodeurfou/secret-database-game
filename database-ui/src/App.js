@@ -9,7 +9,7 @@ function App() {
   const [currentTable, setCurrentTable] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [view, setView] = useState('login'); // 'login', 'folders', 'table', 'edit', 'create'
+  const [view, setView] = useState('login'); // 'login', 'folders', 'table', 'edit', 'create', 'files'
   const [editRow, setEditRow] = useState(null);
   const [formData, setFormData] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -20,6 +20,13 @@ function App() {
   const [codeError, setCodeError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showHomePage, setShowHomePage] = useState(true);
+
+  // File management states
+  const [files, setFiles] = useState([]);
+  const [currentFolder, setCurrentFolder] = useState('/');
+  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -184,6 +191,107 @@ function App() {
     setFormData({ ...formData, [col]: value });
   };
 
+  // File management functions
+  const loadFiles = async (folder = '/') => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/files`, {
+        params: { folder }
+      });
+      setFiles(response.data.files);
+      setCurrentFolder(folder);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to load files');
+      setLoading(false);
+    }
+  };
+
+  const handleCreateFolder = async () => {
+    try {
+      await axios.post(`${API_URL}/files/folder`, {
+        name: newFolderName,
+        parent_folder: currentFolder
+      });
+      setShowNewFolderModal(false);
+      setNewFolderName('');
+      loadFiles(currentFolder);
+    } catch (err) {
+      setError('Failed to create folder');
+    }
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const base64Data = e.target.result.split(',')[1]; // Remove data:...;base64, prefix
+
+        await axios.post(`${API_URL}/files/upload`, {
+          name: file.name,
+          parent_folder: currentFolder,
+          file_data: base64Data,
+          mime_type: file.type,
+          file_size: file.size
+        });
+
+        loadFiles(currentFolder);
+      } catch (err) {
+        setError('Failed to upload file');
+      } finally {
+        setUploadingFile(false);
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleDownloadFile = async (fileId, fileName) => {
+    try {
+      const response = await axios.get(`${API_URL}/files/${fileId}`);
+      const { file_data, mime_type } = response.data;
+
+      // Create blob from base64
+      const byteCharacters = atob(file_data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mime_type });
+
+      // Download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError('Failed to download file');
+    }
+  };
+
+  const handleDeleteFile = async (fileId) => {
+    try {
+      await axios.delete(`${API_URL}/files/${fileId}`);
+      loadFiles(currentFolder);
+    } catch (err) {
+      setError('Failed to delete file');
+    }
+  };
+
+  const openFolder = (folderName) => {
+    const newPath = currentFolder === '/' ? `/${folderName}` : `${currentFolder}/${folderName}`;
+    loadFiles(newPath);
+    setView('files');
+  };
+
   return (
     <div className="App">
       {showHomePage && (
@@ -281,12 +389,19 @@ function App() {
             </div>
           </div>
           <div className="folders-grid">
+            <div className="folder-card" onClick={() => { loadFiles('/'); setView('files'); }}>
+              <div className="folder-icon">
+                <div style={{fontSize: '48px'}}>📁</div>
+              </div>
+              <div className="folder-name">FILES</div>
+              <div className="folder-type">Storage</div>
+            </div>
             {tables.map(table => (
               <div key={table} className="folder-card" onClick={() => loadTableData(table)}>
                 <div className="folder-icon">
                   <svg viewBox="0 0 60 50" width="60" height="50">
-                    <polygon points="0,10 20,10 25,0 60,0 60,10" fill="#4285f4" />
-                    <rect x="0" y="10" width="60" height="40" rx="3" fill="#4285f4" />
+                    <polygon points="0,10 20,10 25,0 60,0 60,10" fill="#0ff" />
+                    <rect x="0" y="10" width="60" height="40" rx="3" fill="#0ff" />
                   </svg>
                 </div>
                 <div className="folder-name">{table}</div>
@@ -367,6 +482,87 @@ function App() {
             <div className="modal-actions">
               <button onClick={() => { setShowDeleteConfirm(false); setDeleteRow(null); }}>Cancel</button>
               <button className="delete-btn" onClick={handleDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {view === 'files' && (
+        <div className="folders-view">
+          <div className="header">
+            <button className="back-btn" onClick={() => setView('folders')}>← BACK</button>
+            <span className="breadcrumb">AREA / FILES {currentFolder !== '/' && `/ ${currentFolder}`}</span>
+            <button className="new-btn" onClick={() => setShowNewFolderModal(true)}>+ NEW FOLDER</button>
+            <label className="new-btn" style={{cursor: 'pointer', marginLeft: '10px'}}>
+              {uploadingFile ? 'UPLOADING...' : '↑ UPLOAD FILE'}
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                style={{display: 'none'}}
+                disabled={uploadingFile}
+              />
+            </label>
+          </div>
+          <div className="folders-grid">
+            {files.map(file => (
+              <div key={file.id} className="folder-card">
+                <div className="folder-icon" onClick={() => file.type === 'folder' ? openFolder(file.name) : null}>
+                  <div style={{fontSize: '48px'}}>
+                    {file.type === 'folder' ? '📁' : '📄'}
+                  </div>
+                </div>
+                <div className="folder-name">{file.name}</div>
+                <div className="folder-type">
+                  {file.type === 'folder' ? 'Folder' : `${(file.file_size / 1024).toFixed(1)} KB`}
+                </div>
+                <div className="file-actions" style={{marginTop: '10px'}}>
+                  {file.type === 'file' && (
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleDownloadFile(file.id, file.name)}
+                      style={{fontSize: '12px', padding: '6px 12px'}}
+                    >
+                      DOWNLOAD
+                    </button>
+                  )}
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDeleteFile(file.id)}
+                    style={{fontSize: '12px', padding: '6px 12px', marginLeft: '5px'}}
+                  >
+                    DELETE
+                  </button>
+                </div>
+              </div>
+            ))}
+            {files.length === 0 && (
+              <div style={{gridColumn: '1 / -1', textAlign: 'center', color: '#0ff', padding: '40px', fontSize: '18px'}}>
+                NO FILES OR FOLDERS
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showNewFolderModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>CREATE NEW FOLDER</h2>
+            <div className="form-fields">
+              <div className="form-field">
+                <label>FOLDER NAME</label>
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder="Enter folder name"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button onClick={() => { setShowNewFolderModal(false); setNewFolderName(''); }}>CANCEL</button>
+              <button className="save-btn" onClick={handleCreateFolder}>CREATE</button>
             </div>
           </div>
         </div>
